@@ -1,5 +1,3 @@
 # R2-D2 Styrene Build
 
-John Morse
-
-January 2020
+John Morse, January 2020
