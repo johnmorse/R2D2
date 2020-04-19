@@ -1,5 +1,5 @@
 #!/usr/bin/python
-""" PS3 Joystick controller """
+""" XBOX1 Joystick controller """
 from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
@@ -33,9 +33,9 @@ signal.signal(signal.SIGINT, sig_handler)
 
 ##########################################################
 # Load config
-_configfile = mainconfig.mainconfig['config_dir'] + 'ps3.cfg'
-_keysfile = mainconfig.mainconfig['config_dir'] + 'ps3_keys.csv'
-_config = configparser.SafeConfigParser({'log_file': '/home/pi/r2_control/logs/ps3.log',
+_configfile = mainconfig.mainconfig['config_dir'] + 'xbox1.cfg'
+_keysfile = mainconfig.mainconfig['config_dir'] + 'xbox1_keys.csv'
+_config = configparser.SafeConfigParser({'log_file': '/home/pi/r2_control/logs/xbox1.log',
                                          'baseurl' : 'http://localhost:5000/',
                                          'keepalive' : 0.25,
                                          'speed_fac' : 0.35,
@@ -67,49 +67,49 @@ if not os.path.isfile(_configfile):
 if not os.path.isfile(_keysfile):
     copyfile('keys-default.csv', _keysfile)
 
-ps3config = _config.defaults()
+xbox1config = _config.defaults()
 
 ##########################################################
 # Set variables
 # Log file location
-log_file = ps3config['log_file']
+log_file = xbox1config['log_file']
 
 # How often should the script send a keepalive (s)
-keepalive = float(ps3config['keepalive'])
+keepalive = float(xbox1config['keepalive'])
 
 # Speed factor. This multiplier will define the max value to be sent to the drive system.
 # eg. 0.5 means that the value of the joystick position will be halved
 # Should never be greater than 1
-speed_fac = float(ps3config['speed_fac'])
+speed_fac = float(xbox1config['speed_fac'])
 
 # Invert. Does the drive need to be inverted. 1 = no, -1 = yes
-invert = int(ps3config['invert'])
+invert = int(xbox1config['invert'])
 
 drive_mod = speed_fac * invert
 
 # Deadband: the amount of deadband on the sticks
-deadband = float(ps3config['deadband'])
+deadband = float(xbox1config['deadband'])
 
 # Exponential curve constant. Set this to 0 < curve < 1 to give difference response curves for axis
-curve = float(ps3config['curve'])
+curve = float(xbox1config['curve'])
 
 dome_speed = 0
-accel_rate = float(ps3config['accel_rate'])
+accel_rate = float(xbox1config['accel_rate'])
 dome_stick = 0
 
 # Set Axis definitions
-PS3_AXIS_LEFT_VERTICAL = int(_config.get('Axis', 'drive'))
-PS3_AXIS_LEFT_HORIZONTAL = int(_config.get('Axis', 'turn'))
-PS3_AXIS_RIGHT_HORIZONTAL = int(_config.get('Axis', 'dome'))
+XBOX1_AXIS_LEFT_VERTICAL = int(_config.get('Axis', 'drive'))
+XBOX1_AXIS_LEFT_HORIZONTAL = int(_config.get('Axis', 'turn'))
+XBOX1_AXIS_RIGHT_HORIZONTAL = int(_config.get('Axis', 'dome'))
 
-baseurl = ps3config['baseurl']
+baseurl = xbox1config['baseurl']
 
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 ################################################################################
 ################################################################################
 # Custom Functions
-def locate(user_string="PS3 Controller", x=0, y=0):
+def locate(user_string="XBOX1 Controller", x=0, y=0):
     """ Place the text at a certain location """
     # Don't allow any user errors. Python's own error detection will check for
     # syntax and concatination, etc, etc, errors.
@@ -211,11 +211,11 @@ def shutdownR2():
         print("Fail....")
 
     f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
-            " ****** PS3 Shutdown ******\n")
+            " ****** XBOX1 Shutdown ******\n")
 
 #######################################################
 
-parser = argparse.ArgumentParser(description='PS3 controller for r2_control.')
+parser = argparse.ArgumentParser(description='XBox1 controller for r2_control.')
 parser.add_argument('--curses', '-c', action="store_true", dest="curses", required=False,
                     default=False, help='Output in a nice readable format')
 parser.add_argument('--dryrun', '-d', action="store_true", dest="dryrun", required=False,
@@ -225,7 +225,7 @@ args = parser.parse_args()
 #### Open a log file
 f = open(log_file, 'at')
 f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
-        " : ****** ps3 started ******\n")
+        " : ****** xbox1 started ******\n")
 f.flush()
 
 if not args.dryrun:
@@ -251,7 +251,7 @@ pygame.display.init()
 
 if args.curses:
     print('\033c')
-    locate("-=[ PS3 Controller ]=-", 10, 0)
+    locate("-=[ XBOX1 Controller ]=-", 10, 0)
     locate("Left", 3, 2)
     locate("Right", 30, 2)
     locate("Joystick Input", 18, 3)
@@ -439,7 +439,7 @@ while (joystick):
                     print("No combo (released)")
             previous = ""
         if event.type == pygame.JOYAXISMOTION:
-            if event.axis == PS3_AXIS_LEFT_VERTICAL:
+            if event.axis == XBOX1_AXIS_LEFT_VERTICAL:
                 if __debug__:
                     print("Value (Drive): %s : Speed Factor : %s" % (event.value, speed_fac))
                 if args.curses:
@@ -447,14 +447,14 @@ while (joystick):
                     locate('%10f' % (event.value), 10, 4)
                 _throttle = event.value
                 last_command = time.time()
-            elif event.axis == PS3_AXIS_LEFT_HORIZONTAL:
+            elif event.axis == XBOX1_AXIS_LEFT_HORIZONTAL:
                 if __debug__:
                     print("Value (Steer): %s" % event.value)
                 if args.curses:
                     locate("                   ", 10, 5)
                     locate('%10f' % (event.value), 10, 5)
                 _turning = event.value
-            elif event.axis == PS3_AXIS_RIGHT_HORIZONTAL:
+            elif event.axis == XBOX1_AXIS_RIGHT_HORIZONTAL:
                 if __debug__:
                     print("Value (Dome): %s" % event.value)
                 if args.curses:
