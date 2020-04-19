@@ -24,18 +24,14 @@ import SabertoothPacketSerial
 sys.path.insert(0, '/home/pi/r2_control')
 from r2utils import telegram, internet, mainconfig
 
-pygame.display.init()
+#pygame.display.init()
 
 while True:
     pygame.joystick.quit()
     pygame.joystick.init()
     num_joysticks = pygame.joystick.get_count()
-    if __debug__:
-        print("Waiting for joystick... (count: %s)" % num_joysticks)
+    print("Waiting for joystick... (count: %s)" % num_joysticks)
     if num_joysticks != 0:
-        f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
-                " : Joystick found \n")
-        f.flush()
         break
     time.sleep(5)
 
