@@ -359,8 +359,8 @@ while (joystick):
             if args.curses:
                 locate("                   ", 1, 14)
                 locate(combo, 3, 14)
-            # Special key press (All 4 plus triangle) to increase speed of drive
-            if combo == "00001111000000001":
+            # Special key press (All 4 plus top right) to increase speed of drive
+            if combo == "110110010000000":
                 if __debug__:
                     print("Incrementing drive speed")
                 # When detected, will increment the speed_fac by 0.5 and give some audio feedback.
@@ -380,8 +380,8 @@ while (joystick):
                 except:
                     if __debug__:
                         print("Fail....")
-            # Special key press (All 4 plus X) to decrease speed of drive
-            if combo == "00001111000000010":
+            # Special key press (All 4 plus top left) to decrease speed of drive
+            if combo == "110110100000000":
                 if __debug__:
                     print("Decrementing drive speed")
                 # When detected, will increment the speed_fac by 0.5 and give some audio feedback.

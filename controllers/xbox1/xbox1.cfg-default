@@ -1,7 +1,7 @@
 [DEFAULT]
 deadband = 0.2
 invert = -1
-log_file = /home/pi/r2_control/logs/ps3.log
+log_file = /home/pi/r2_control/logs/xbox1.log
 speed_fac = 0.35
 keepalive = 0.25
 

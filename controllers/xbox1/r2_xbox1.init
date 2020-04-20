@@ -1,6 +1,6 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          r2_ps3
+# Provides:          r2_xbox1
 # Required-Start:    $all
 # Required-Stop:     
 # Default-Start:     2 3 4 5
@@ -16,14 +16,14 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin
 
 case "$1" in
   start)
-    log_begin_msg "Starting r2_ps3"
-    cd /home/pi/r2_control/controllers/ps3
-    python -O ./r2_ps3.py
+    log_begin_msg "Starting r2_xbox1"
+    cd /home/pi/r2_control/controllers/xbox1
+    python -O ./r2_xbox1.py
     log_end_msg $?
     exit 0
     ;;
   stop)
-    log_begin_msg "Stopping r2_ps3"
+    log_begin_msg "Stopping r2_xbox1"
 
     # do something to kill the service or cleanup or nothing
 
@@ -31,7 +31,7 @@ case "$1" in
     exit 0
     ;;
   *)
-    echo "Usage: /etc/init.d/r2_ps3 {start|stop}"
+    echo "Usage: /etc/init.d/r2_xbox1 {start|stop}"
     exit 1
     ;;
 esac
