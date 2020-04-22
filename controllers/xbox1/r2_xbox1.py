@@ -211,11 +211,10 @@ def shutdownR2():
         print("Fail....")
 
     f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
-            " ****** XBOX1 Shutdown ******\n")
 
 #######################################################
 
-parser = argparse.ArgumentParser(description='XBox1 controller for r2_control.')
+parser = argparse.ArgumentParser(description='X-Box One controller for r2_control.')
 parser.add_argument('--curses', '-c', action="store_true", dest="curses", required=False,
                     default=False, help='Output in a nice readable format')
 parser.add_argument('--dryrun', '-d', action="store_true", dest="dryrun", required=False,
@@ -225,7 +224,7 @@ args = parser.parse_args()
 #### Open a log file
 f = open(log_file, 'at')
 f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
-        " : ****** xbox1 started ******\n")
+        " : ****** X-Box One started ******\n")
 f.flush()
 
 if not args.dryrun:
@@ -359,8 +358,8 @@ while (joystick):
             if args.curses:
                 locate("                   ", 1, 14)
                 locate(combo, 3, 14)
-            # Special key press (All 4 plus top right) to increase speed of drive
-            if combo == "110110010000000":
+            # Special key press (All 4 plus triangle) to increase speed of drive
+            if combo == "00001111000000001":
                 if __debug__:
                     print("Incrementing drive speed")
                 # When detected, will increment the speed_fac by 0.5 and give some audio feedback.
@@ -380,8 +379,8 @@ while (joystick):
                 except:
                     if __debug__:
                         print("Fail....")
-            # Special key press (All 4 plus top left) to decrease speed of drive
-            if combo == "110110100000000":
+            # Special key press (All 4 plus X) to decrease speed of drive
+            if combo == "00001111000000010":
                 if __debug__:
                     print("Decrementing drive speed")
                 # When detected, will increment the speed_fac by 0.5 and give some audio feedback.

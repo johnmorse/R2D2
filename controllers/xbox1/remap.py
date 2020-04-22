@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#import requests
+import requests
 import csv
 import os
 import sys
@@ -8,7 +8,7 @@ import datetime
 from cStringIO import StringIO
 from collections import defaultdict
 
-newkeys = [2,1,4,3,0,5,6,7,8,12,13,9,14,10,11,15,16]
+newkeys = [10,11,12,9,13,16,14,15,6,7,4,5,2,1,0,3,10]
 
 with open ('oldkeys.csv', mode='r') as infile:
 	reader = csv.reader(infile)

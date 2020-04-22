@@ -24,21 +24,21 @@ from io import StringIO
 #sys.path.insert(0, '/home/pi/r2_control')
 #from r2utils import telegram, internet, mainconfig
 
-BUT_A   =  0
-BUT_B   =  1
-#       =  2
-BUT_X   =  3
-BUT_Y   =  4
-#       =  5
-BUT_TL  =  6
-BUT_TR  =  7
-#       =  8
-#       =  9
-#       = 10
-BUT_MEN = 11
-#       = 12
-BUT_LJS = 13
-BUT_RJS = 14
+BUT_A   =  0 # X (2) on PS3
+BUT_B   =  1 # O (1) on PS3
+#       =  2
+BUT_X   =  3 # Square (3) on PS3
+BUT_Y   =  4 # Tri (0) on PS3
+#       =  5
+BUT_TL  =  6 # TopLeft  - L1 (6) on PS3
+BUT_TR  =  7 # TopRight - R1 (7) on PS3
+#       =  8
+#       =  9
+#       = 10
+BUT_MEN = 11 # Start (9) on PS3
+#       = 12
+BUT_LJS = 13 # L3 (10) on PS3
+BUT_RJS = 14 # R3 (11) on PS3
 
 def printButtonEvent(event):
     if event.button == BUT_A:
