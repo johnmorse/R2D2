@@ -227,7 +227,7 @@ f = open(log_file, 'at')
 f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
         " : ****** xbox started ******\n")
 f.flush()
-s
+
 if not args.dryrun:
     if __debug__:
         print("Not a drytest")
