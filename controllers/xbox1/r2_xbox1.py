@@ -357,7 +357,7 @@ while (joystick):
             for i in range(buttons):
                 button = j.get_button(i)
                 buf.write(str(button))
-            combo = r2buttons.getKeyString(buf.getvalue())
+            combo = r2buttons.getKeyString(buf.getvalue(), True)
             if __debug__:
                 print("Buttons pressed: %s" % combo)
             if args.curses:
