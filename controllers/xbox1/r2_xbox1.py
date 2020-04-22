@@ -23,7 +23,6 @@ import signal
 import SabertoothPacketSerial
 sys.path.insert(0, '/home/pi/r2_control')
 from r2utils import telegram, internet, mainconfig
-import r2buttons
 
 def sig_handler(signal, frame):
     """ Handle signals """
@@ -68,34 +67,34 @@ if not os.path.isfile(_configfile):
 if not os.path.isfile(_keysfile):
     copyfile('keys-default.csv', _keysfile)
 
-xbox1config = _config.defaults()
+mainconfig = _config.defaults()
 
 ##########################################################
 # Set variables
 # Log file location
-log_file = xbox1config['log_file']
+log_file = mainconfig['log_file']
 
 # How often should the script send a keepalive (s)
-keepalive = float(xbox1config['keepalive'])
+keepalive = float(mainconfig['keepalive'])
 
 # Speed factor. This multiplier will define the max value to be sent to the drive system.
 # eg. 0.5 means that the value of the joystick position will be halved
 # Should never be greater than 1
-speed_fac = float(xbox1config['speed_fac'])
+speed_fac = float(mainconfig['speed_fac'])
 
 # Invert. Does the drive need to be inverted. 1 = no, -1 = yes
-invert = int(xbox1config['invert'])
+invert = int(mainconfig['invert'])
 
 drive_mod = speed_fac * invert
 
 # Deadband: the amount of deadband on the sticks
-deadband = float(xbox1config['deadband'])
+deadband = float(mainconfig['deadband'])
 
 # Exponential curve constant. Set this to 0 < curve < 1 to give difference response curves for axis
-curve = float(xbox1config['curve'])
+curve = float(mainconfig['curve'])
 
 dome_speed = 0
-accel_rate = float(xbox1config['accel_rate'])
+accel_rate = float(mainconfig['accel_rate'])
 dome_stick = 0
 
 # Set Axis definitions
@@ -103,7 +102,7 @@ CONTROLLER_AXIS_LEFT_VERTICAL = int(_config.get('Axis', 'drive'))
 CONTROLLER_AXIS_LEFT_HORIZONTAL = int(_config.get('Axis', 'turn'))
 CONTROLLER_AXIS_RIGHT_HORIZONTAL = int(_config.get('Axis', 'dome'))
 
-baseurl = xbox1config['baseurl']
+baseurl = mainconfig['baseurl']
 
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
@@ -114,8 +113,12 @@ def locate(user_string="XBOX1 Controller", x=0, y=0):
     """ Place the text at a certain location """
     # Don't allow any user errors. Python's own error detection will check for
     # syntax and concatination, etc, etc, errors.
-    x = max(0, min(80, int(x)))
-    y = max(0, min(40, int(y)))
+    x = int(x)
+    y = int(y)
+    if x >= 80: x = 80
+    if y >= 40: y = 40
+    if x <= 0: x = 0
+    if y <= 0: y = 0
     HORIZ = str(x)
     VERT = str(y)
     # Plot the user_string at the starting at position HORIZ, VERT...
@@ -208,10 +211,11 @@ def shutdownR2():
         print("Fail....")
 
     f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
+            " ****** XBOX1 Shutdown ******\n")
 
 #######################################################
 
-parser = argparse.ArgumentParser(description='X-Box One controller for r2_control.')
+parser = argparse.ArgumentParser(description='XBOX1 controller for r2_control.')
 parser.add_argument('--curses', '-c', action="store_true", dest="curses", required=False,
                     default=False, help='Output in a nice readable format')
 parser.add_argument('--dryrun', '-d', action="store_true", dest="dryrun", required=False,
@@ -221,9 +225,9 @@ args = parser.parse_args()
 #### Open a log file
 f = open(log_file, 'at')
 f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
-        " : ****** X-Box One started ******\n")
+        " : ****** xbox started ******\n")
 f.flush()
-
+s
 if not args.dryrun:
     if __debug__:
         print("Not a drytest")
@@ -343,18 +347,20 @@ while (joystick):
             print("Something went wrong!")
         shutdownR2()
         sys.exit(0)
-    speed_up = r2buttons.getKeyString("00001111000000010", True)
-    slow_down = r2buttons.getKeyString("00001111000000010", True)
     for event in events:
         if event.type == pygame.JOYBUTTONDOWN:
-        	combo = r2buttons.getButtonStateString(j, event, False)
+            buf = StringIO()
+            for i in range(buttons):
+                button = j.get_button(i)
+                buf.write(str(button))
+            combo = buf.getvalue()
             if __debug__:
-                print("Buttons pressed: %s->%s" % (combo, r2buttons.getKeyString(combo, True)))
+                print("Buttons pressed: %s" % combo)
             if args.curses:
                 locate("                   ", 1, 14)
                 locate(combo, 3, 14)
             # Special key press (All 4 plus triangle) to increase speed of drive
-            if combo == speed_up:
+            if combo == "00001111000000001":
                 if __debug__:
                     print("Incrementing drive speed")
                 # When detected, will increment the speed_fac by 0.5 and give some audio feedback.
@@ -375,7 +381,7 @@ while (joystick):
                     if __debug__:
                         print("Fail....")
             # Special key press (All 4 plus X) to decrease speed of drive
-            if combo == slow_down:
+            if combo == "00001111000000010":
                 if __debug__:
                     print("Decrementing drive speed")
                 # When detected, will increment the speed_fac by 0.5 and give some audio feedback.
