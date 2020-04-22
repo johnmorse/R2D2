@@ -6,6 +6,7 @@ standard_library.install_aliases()
 from builtins import str
 from builtins import range
 import pygame
+import r2buttons
 import requests
 import csv
 import configparser
@@ -222,6 +223,7 @@ parser.add_argument('--dryrun', '-d', action="store_true", dest="dryrun", requir
                     default=False, help='Output in a nice readable format')
 args = parser.parse_args()
 
+# TODO: REMOVE the next line when the motor drivers get connected
 args.dryrun = True
 
 #### Open a log file
@@ -355,7 +357,7 @@ while (joystick):
             for i in range(buttons):
                 button = j.get_button(i)
                 buf.write(str(button))
-            combo = buf.getvalue()
+            combo = r2buttons.getKeyString(buf.getvalue())
             if __debug__:
                 print("Buttons pressed: %s" % combo)
             if args.curses:

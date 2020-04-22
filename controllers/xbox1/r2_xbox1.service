@@ -1,5 +1,5 @@
 [Unit]
-Description=R2 X-Box One
+Description=R2 XBOX1
  
 [Service]
 ExecStart=/usr/bin/python /home/pi/r2_control/controllers/xbox1/r2_xbox1.py
