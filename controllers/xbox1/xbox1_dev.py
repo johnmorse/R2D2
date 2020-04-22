@@ -9,6 +9,7 @@ import pygame
 #import requests
 #import csv
 #import configparser
+import xbox1_defines
 import os
 import sys
 import time
@@ -24,40 +25,24 @@ from io import StringIO
 #sys.path.insert(0, '/home/pi/r2_control')
 #from r2utils import telegram, internet, mainconfig
 
-BUT_A   =  0 # X (2) on PS3
-BUT_B   =  1 # O (1) on PS3
-#       =  2
-BUT_X   =  3 # Square (3) on PS3
-BUT_Y   =  4 # Tri (0) on PS3
-#       =  5
-BUT_TL  =  6 # TopLeft  - L1 (6) on PS3
-BUT_TR  =  7 # TopRight - R1 (7) on PS3
-#       =  8
-#       =  9
-#       = 10
-BUT_MEN = 11 # Start (9) on PS3
-#       = 12
-BUT_LJS = 13 # L3 (10) on PS3
-BUT_RJS = 14 # R3 (11) on PS3
-
 def printButtonEvent(event):
-    if event.button == BUT_A:
+    if event.button == xbox1_defines.BUT_A:
         print("A")
-    elif event.button == BUT_B:
+    elif event.button == xbox1_defines.BUT_B:
         print("B")
-    elif event.button == BUT_X:
+    elif event.button == xbox1_defines.BUT_X:
         print("X")
-    elif event.button == BUT_Y:
+    elif event.button == xbox1_defines.BUT_Y:
         print("Y")
-    elif event.button == BUT_TL:
+    elif event.button == xbox1_defines.BUT_TOPL:
         print("Top left button")
-    elif event.button == BUT_TR:
+    elif event.button == xbox1_defines.BUT_TOPR:
         print("Top right button")
-    elif event.button == BUT_MEN:
+    elif event.button == xbox1_defines.BUT_MENU:
         print("Menu")
-    elif event.button == BUT_LJS:
+    elif event.button == xbox1_defines.BUT_JOYSTL:
         print("Left joystick click")
-    elif event.button == BUT_RJS:
+    elif event.button == xbox1_defines.BUT_JOYSTR:
         print("Right joystick click")
     else:
         print "Unknown button"
