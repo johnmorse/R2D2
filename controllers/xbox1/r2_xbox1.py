@@ -23,6 +23,7 @@ import signal
 import SabertoothPacketSerial
 sys.path.insert(0, '/home/pi/r2_control')
 from r2utils import telegram, internet, mainconfig
+import r2buttons
 
 def sig_handler(signal, frame):
     """ Handle signals """
@@ -98,9 +99,9 @@ accel_rate = float(xbox1config['accel_rate'])
 dome_stick = 0
 
 # Set Axis definitions
-XBOX1_AXIS_LEFT_VERTICAL = int(_config.get('Axis', 'drive'))
-XBOX1_AXIS_LEFT_HORIZONTAL = int(_config.get('Axis', 'turn'))
-XBOX1_AXIS_RIGHT_HORIZONTAL = int(_config.get('Axis', 'dome'))
+CONTROLLER_AXIS_LEFT_VERTICAL = int(_config.get('Axis', 'drive'))
+CONTROLLER_AXIS_LEFT_HORIZONTAL = int(_config.get('Axis', 'turn'))
+CONTROLLER_AXIS_RIGHT_HORIZONTAL = int(_config.get('Axis', 'dome'))
 
 baseurl = xbox1config['baseurl']
 
@@ -113,12 +114,8 @@ def locate(user_string="XBOX1 Controller", x=0, y=0):
     """ Place the text at a certain location """
     # Don't allow any user errors. Python's own error detection will check for
     # syntax and concatination, etc, etc, errors.
-    x = int(x)
-    y = int(y)
-    if x >= 80: x = 80
-    if y >= 40: y = 40
-    if x <= 0: x = 0
-    if y <= 0: y = 0
+    x = max(0, min(80, int(x)))
+    y = max(0, min(40, int(y)))
     HORIZ = str(x)
     VERT = str(y)
     # Plot the user_string at the starting at position HORIZ, VERT...
@@ -346,20 +343,18 @@ while (joystick):
             print("Something went wrong!")
         shutdownR2()
         sys.exit(0)
+    speed_up = r2buttons.getKeyString("00001111000000010", True)
+    slow_down = r2buttons.getKeyString("00001111000000010", True)
     for event in events:
         if event.type == pygame.JOYBUTTONDOWN:
-            buf = StringIO()
-            for i in range(buttons):
-                button = j.get_button(i)
-                buf.write(str(button))
-            combo = buf.getvalue()
+        	combo = r2buttons.getButtonStateString(j, event, False)
             if __debug__:
-                print("Buttons pressed: %s" % combo)
+                print("Buttons pressed: %s->%s" % (combo, r2buttons.getKeyString(combo, True)))
             if args.curses:
                 locate("                   ", 1, 14)
                 locate(combo, 3, 14)
             # Special key press (All 4 plus triangle) to increase speed of drive
-            if combo == "00001111000000001":
+            if combo == speed_up:
                 if __debug__:
                     print("Incrementing drive speed")
                 # When detected, will increment the speed_fac by 0.5 and give some audio feedback.
@@ -380,7 +375,7 @@ while (joystick):
                     if __debug__:
                         print("Fail....")
             # Special key press (All 4 plus X) to decrease speed of drive
-            if combo == "00001111000000010":
+            if combo == slow_down:
                 if __debug__:
                     print("Decrementing drive speed")
                 # When detected, will increment the speed_fac by 0.5 and give some audio feedback.
@@ -438,7 +433,7 @@ while (joystick):
                     print("No combo (released)")
             previous = ""
         if event.type == pygame.JOYAXISMOTION:
-            if event.axis == XBOX1_AXIS_LEFT_VERTICAL:
+            if event.axis == CONTROLLER_AXIS_LEFT_VERTICAL:
                 if __debug__:
                     print("Value (Drive): %s : Speed Factor : %s" % (event.value, speed_fac))
                 if args.curses:
@@ -446,14 +441,14 @@ while (joystick):
                     locate('%10f' % (event.value), 10, 4)
                 _throttle = event.value
                 last_command = time.time()
-            elif event.axis == XBOX1_AXIS_LEFT_HORIZONTAL:
+            elif event.axis == CONTROLLER_AXIS_LEFT_HORIZONTAL:
                 if __debug__:
                     print("Value (Steer): %s" % event.value)
                 if args.curses:
                     locate("                   ", 10, 5)
                     locate('%10f' % (event.value), 10, 5)
                 _turning = event.value
-            elif event.axis == XBOX1_AXIS_RIGHT_HORIZONTAL:
+            elif event.axis == CONTROLLER_AXIS_RIGHT_HORIZONTAL:
                 if __debug__:
                     print("Value (Dome): %s" % event.value)
                 if args.curses:
