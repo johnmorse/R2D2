@@ -222,6 +222,8 @@ parser.add_argument('--dryrun', '-d', action="store_true", dest="dryrun", requir
                     default=False, help='Output in a nice readable format')
 args = parser.parse_args()
 
+args.dryrun = True
+
 #### Open a log file
 f = open(log_file, 'at')
 f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
