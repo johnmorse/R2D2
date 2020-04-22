@@ -1,19 +1,19 @@
 # Columns
 # System button index, Controller button index, Comments - ignored
-0,4,Triangle->Y
-1,1,Circle->B
-2,0,Cross->A
-3,3,Square->X
-4,2,L2
-5,5,R2
-6,6,L1->L1
-7,7,R1->R1
-8,8,Select
-9,11,Start->Menu
-10,13,L3->L3
-11,14,R3->R3
-12,9,D-pad?
-13,10,D-pad?
-14,12,D-pad?
-15,15,D-pad?
-16,16,Padding?
+0,0,Cross,A
+1,1,Circle,B
+2,4,Triangle,Y
+3,3,Square,X
+4,2,L2,
+5,5,R2,
+6,6,L1,L1
+7,7,R1,R1
+8,10,Select,
+9,11,Start,Menu
+10,12,,
+11,13,L3,L3
+12,14,R3,R3
+13,8,Up DPad,
+14,9,Down DPad,
+15,15,Left DPad,
+16,16,Right DPad,
