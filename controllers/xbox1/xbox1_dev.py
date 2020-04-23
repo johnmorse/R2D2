@@ -95,6 +95,8 @@ while (joystick):
                 buf.write(str(button))
             combo = buf.getvalue()
             print("Buttons pressed: %s" % combo)
+            v = j.getvalue(pygame.JOYAXISMOTION)
+            print("value" + str(v))
             if event.button == 11:
                 joystick = False
                 continue
