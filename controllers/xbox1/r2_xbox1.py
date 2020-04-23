@@ -222,11 +222,11 @@ def getButtonStateString(j, buttons):
     for i in range(buttons):
         button = j.get_button(i)
         # Up
-        if i == xbox1_defines.BUT_EMPTY4:
+        if i == xbox1_defines.BUT_EMPTY3:
             if hat[1] > 0:
                 button = 1
         # Down
-        elif i == xbox1_defines.BUT_EMPTY5:
+        elif i == xbox1_defines.BUT_EMPTY4:
             if hat[1] < 0:
                 button = 1
         # Left
