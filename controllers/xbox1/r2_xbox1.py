@@ -214,6 +214,49 @@ def shutdownR2():
     f.write(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') +
             " ****** XBOX1 Shutdown ******\n")
 
+def getButtonStateString(j, buttons):
+    hat = j.get_hat(0)
+    print(hat)
+    buf = StringIO()
+    for i in range(buttons):
+        button = j.get_button(i)
+        # Up
+        if i == xbox1_defines.BUT_EMPTY4:
+            if hat[1] > 0:
+                button = 1
+        # Down
+        elif i == xbox1_defines.BUT_EMPTY5:
+            if hat[1] < 0:
+                button = 1
+        # Left
+        elif i == xbox1_defines.BUT_EMPTY7:
+            if hat[0] < 0:
+                button = 1
+        # Right
+        elif i == xbox1_defines.BUT_EMPTY8:
+            if hat[0] > 0:
+                button = 1
+        buf.write(str(button))
+    # Fill in the blank 0 to get to the last two postions
+    dif = buttons - xbox1_defines.BUT_EMPTY7 - 1
+    while dif > 0:
+        buf.write('0')
+        dif -= 1
+    # Left
+    if buttons <= xbox1_defines.BUT_EMPTY7:
+        print("Left")
+        button = 0;
+        if hat[0] < 0:
+            button = 1
+        buf.write(str(button))
+    # Right
+    if buttons <= xbox1_defines.BUT_EMPTY8:
+        button = 0;
+        if hat[0] > 0:
+            button = 1
+        buf.write(str(button))
+    return buf.getvalue()
+
 #######################################################
 
 parser = argparse.ArgumentParser(description='XBOX1 controller for r2_control.')
@@ -353,11 +396,7 @@ while (joystick):
         sys.exit(0)
     for event in events:
         if event.type == pygame.JOYBUTTONDOWN:
-            buf = StringIO()
-            for i in range(buttons):
-                button = j.get_button(i)
-                buf.write(str(button))
-            combo = r2buttons.getKeyString(buf.getvalue(), True)
+            combo = r2buttons.getKeyString(getButtonStateString(j, buttons))
             if __debug__:
                 print("Buttons pressed: %s" % combo)
             if args.curses:
