@@ -7,6 +7,7 @@ from builtins import str
 from builtins import range
 import pygame
 import r2buttons
+import xbox1_defines
 import requests
 import csv
 import configparser
