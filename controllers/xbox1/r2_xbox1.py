@@ -397,9 +397,10 @@ while (joystick):
         sys.exit(0)
     for event in events:
         if event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYHATMOTION:
-            combo = r2buttons.getKeyString(getButtonStateString(j, buttons), True)
+            buff = getButtonStateString(j, buttons)
+            combo = r2buttons.getKeyString(buff, True)
             if __debug__:
-                print("Buttons pressed: %s" % combo)
+                print("Buttons pressed: %s -> %s" % (buff, combo))
             if args.curses:
                 locate("                   ", 1, 14)
                 locate(combo, 3, 14)
