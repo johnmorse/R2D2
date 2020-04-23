@@ -48,6 +48,49 @@ def printButtonEvent(event):
         print "Unknown button"
         print(event)
 
+def getButtonStateString(j, buttons):
+    hat = j.get_hat(0)
+    print(hat)
+    buf = StringIO()
+    for i in range(buttons):
+        button = j.get_button(i)
+        # Up
+        if i == xbox1_defines.BUT_EMPTY4:
+            if hat[1] > 0:
+                button = 1
+        # Down
+        elif i == xbox1_defines.BUT_EMPTY5:
+            if hat[1] < 0:
+                button = 1
+        # Left
+        elif i == xbox1_defines.BUT_EMPTY7:
+            if hat[0] < 0:
+                button = 1
+        # Right
+        elif i == xbox1_defines.BUT_EMPTY8:
+            if hat[0] > 0:
+                button = 1
+        buf.write(str(button))
+    # Fill in the blank 0 to get to the last two postions
+    dif = buttons - xbox1_defines.BUT_EMPTY7 - 1
+    while dif > 0:
+        buf.write('0')
+        dif -= 1
+    # Left
+    if buttons <= xbox1_defines.BUT_EMPTY7:
+        print("Left")
+        button = 0;
+        if hat[0] < 0:
+            button = 1
+        buf.write(str(button))
+    # Right
+    if buttons <= xbox1_defines.BUT_EMPTY8:
+        button = 0;
+        if hat[0] > 0:
+            button = 1
+        buf.write(str(button))
+    return buf.getvalue()
+
 pygame.display.init()
 
 while True:
@@ -66,8 +109,9 @@ print("Framebuffer size: %d x %d" % (size[0], size[1]))
 j = pygame.joystick.Joystick(0)
 j.init()
 buttons = j.get_numbuttons()
+hats = j.get_numhats()
 
-print("Joystick buttons(%d)" % (buttons))
+print("Joystick buttons(%d) hats(%d)" % (buttons, hats))
 last_command = time.time()
 joystick = True
 
@@ -89,14 +133,8 @@ while (joystick):
             continue
         if event.type == pygame.JOYBUTTONDOWN:
             printButtonEvent(event)
-            buf = StringIO()
-            for i in range(buttons):
-                button = j.get_button(i)
-                buf.write(str(button))
-            combo = buf.getvalue()
+            combo = getButtonStateString(j, buttons)
             print("Buttons pressed: %s" % combo)
-            v = j.getvalue(pygame.JOYAXISMOTION)
-            print("value" + str(v))
             if event.button == 11:
                 joystick = False
                 continue
