@@ -397,8 +397,7 @@ while (joystick):
         sys.exit(0)
     for event in events:
         if event.type == pygame.JOYBUTTONDOWN:
-            buff = getButtonStateString(j, buttons)
-            combo = r2buttons.getKeyString(buff)
+            combo = r2buttons.getKeyString(getButtonStateString(j, buttons), True)
             if __debug__:
                 print("Buttons pressed: %s" % combo)
             if args.curses:
