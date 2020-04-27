@@ -96,6 +96,7 @@ class R2PygameJoystick:
         self.__joystick.init()
         self.__buttonCount = self.__joystick.get_numbuttons()
         self.__hat_count = self.__joystick.get_numhats()
+        self.last_command = time.time()
 
         print("Joystick buttons(%d) hats(%d)" % (self.__buttonCount, self.__hat_count))
 
@@ -109,23 +110,23 @@ class R2PygameJoystick:
         ContinueRunning returns False.
         """
         self.__initialize()
-        if self.debug:
-            while (self.continue_running()):
-                events = pygame.event.get()
-                for event in events:
-                    self.event_proc(event)
-            print("ContinueRunning returned False")
-            self.on_exit_run(False)
-        else:
-            try:
-                while (self.continue_running()):
-                    events = pygame.event.get()
-                    for event in events:
-                        self.event_proc(event)
-                self.on_exit_run(False)
-            except:
-                print("Something went wrong!")
-                self.on_exit_run(True)
+        # if self.debug:
+        while (self.continue_running()):
+            events = pygame.event.get()
+            for event in events:
+                self.event_proc(event)
+        print("ContinueRunning returned False")
+        self.on_exit_run(False)
+        # else:
+        #     try:
+        #         while (self.continue_running()):
+        #             events = pygame.event.get()
+        #             for event in events:
+        #                 self.event_proc(event)
+        #         self.on_exit_run(False)
+        #     except:
+        #         print("Something went wrong!")
+        #         self.on_exit_run(True)
         return
 
     def on_initialized(self):
@@ -317,9 +318,9 @@ class R2PygameGamepad(R2PygameJoystick):
                     print("Row: %s | %s | %s" % (row[0], row[1], row[2]))
                 self.__keys[row[0]].append(row[1])
                 self.__keys[row[0]].append(row[2])
-        # Set the __key_string_length based on the first key in the dictionary
-        # this is used by get_key_string to size the key string
-        self.__key_string_length = len(self.__keys[0][0])
+                # Set the __key_string_length based on the first key in the dictionary
+                # this is used by get_key_string to size the key string
+                self.__key_string_length = max(self.__key_string_length, len(row[0]))
         # Print the keys dictionary
         list(self.__keys.items())
         return
@@ -331,6 +332,9 @@ class R2PygameGamepad(R2PygameJoystick):
         parser.add_argument('--dryrun', '-d', action="store_true", dest="dryrun", required=False,
                             default=False, help='Output in a nice readable format')
         self.__args = parser.parse_args()
+        # TODO: Figure out what is going on with the Sabertooth driver and get
+        # get rid of the next line
+        self.__args.dryrun = True
 
         if self.__args.curses:
             print('\033c')
@@ -411,7 +415,7 @@ class R2PygameGamepad(R2PygameJoystick):
         if not R2PygameJoystick.continue_running(self):
             return False
         self.steering(self.turning, self.throttle)
-        difference = float(time.time() - self.LastCommand)
+        difference = float(time.time() - self.last_command)
         result = True
         if difference > self.keep_alive:
             if self.debug:
@@ -430,7 +434,7 @@ class R2PygameGamepad(R2PygameJoystick):
                 print("Shutdown file is there")
                 result = False
                 self.shutdown_r2()
-            self.LastCommand = time.time()
+            self.last_command = time.time()
         return result
 
     def on_exit_run(self, exceptionCaught):
@@ -600,7 +604,7 @@ class R2PygameGamepad(R2PygameJoystick):
             self.locate_if_curses("                   ", 10, 4)
             self.locate_if_curses('%10f' % (value), 10, 4)
             self.throttle = value
-            self.LastCommand = time.time()
+            self.last_command = time.time()
         elif axis == self.__axis_left_horizontal:
             if self.debug:
                 print("Value (Steer): %s" % value)
@@ -617,7 +621,7 @@ class R2PygameGamepad(R2PygameJoystick):
                 print("Not a drytest")
             self.locate_if_curses("                   ", 35, 8)
             self.locate_if_curses('%10f' % (value), 35, 8)
-            self.LastCommand = time.time()
+            self.last_command = time.time()
         return
 
     def steering(self, x, y):
