@@ -319,7 +319,7 @@ class R2PygameGamepad(R2PygameJoystick):
                 self.__keys[row[0]].append(row[2])
         # Set the __key_string_length based on the first key in the dictionary
         # this is used by get_key_string to size the key string
-        self.__key_string_length = self.__keys[0][0]
+        self.__key_string_length = len(self.__keys[0][0])
         # Print the keys dictionary
         list(self.__keys.items())
         return
