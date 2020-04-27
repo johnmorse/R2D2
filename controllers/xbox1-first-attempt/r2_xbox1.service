@@ -1,0 +1,14 @@
+[Unit]
+Description=R2 XBOX1
+ 
+[Service]
+ExecStart=/usr/bin/python /home/pi/r2_control/controllers/xbox1/r2_xbox1.py
+WorkingDirectory=/home/pi/r2_control/controllers/xbox1
+StandardOutput=syslog
+Restart=on-failure
+ 
+[Install]
+WantedBy=multi-user.target
+Alias=r2_xbox1.service
+
+

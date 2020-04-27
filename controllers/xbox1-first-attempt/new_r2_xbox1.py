@@ -1,11 +1,16 @@
+import os
+import sys
+sys.path.insert(0, '/home/pi/r2pylib/controler')
 from r2pygame import R2PygameGamepad
+
+BUTTON_COUNT = 17
 
 class XBox1Controller(R2PygameGamepad):
     def get_button_states(self):
         states = R2PygameGamepad.get_button_states(self);
-        # Get the d-pad button states and add them to the state array
+        while len(states) < BUTTON_COUNT:
+            states.append(0)
         hats = self.get_hat_states(0)
-        # Unused button index placeholders for d-pad buttons
         states[8] = 1 if hats[1] > 0 else 0
         states[9] = 1 if hats[1] < 0 else 0
         states[15] = 1 if hats[0] < 0 else 0
@@ -13,8 +18,7 @@ class XBox1Controller(R2PygameGamepad):
         return states
 
     def on_mat_motion(self, event):
-        # Simulate button up event if bot items in the state array are zero
-        # otherwise simulate button down.
+        print("OnHatMotion")
         hats = self.get_hat_states(0)
         if hats[0] == 0 and hats[1] == 0:
             self.button_released()
@@ -55,5 +59,5 @@ class XBox1Controller(R2PygameGamepad):
             }
         return switcher.get(buttonIndex,buttonIndex)
 
-_controller = XBox1Controller("xbox1", "XBOX1", True)
+_controller = XBox1Controller(BUTTON_COUNT, "xbox1", "XBOX1", True)
 _controller.run()

@@ -2,7 +2,7 @@
 ### BEGIN INIT INFO
 # Provides:          r2_xbox1
 # Required-Start:    $all
-# Required-Stop:
+# Required-Stop:     
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Manage my cool stuff
@@ -18,7 +18,7 @@ case "$1" in
   start)
     log_begin_msg "Starting r2_xbox1"
     cd /home/pi/r2_control/controllers/xbox1
-    sudo python -O ./r2_xbox1.py
+    python -O ./r2_xbox1.py
     log_end_msg $?
     exit 0
     ;;
@@ -35,3 +35,4 @@ case "$1" in
     exit 1
     ;;
 esac
+
