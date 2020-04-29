@@ -14,8 +14,10 @@ from shutil import copyfile
 import odrive
 import signal
 from enum import Enum
-from SabertoothPacketSerial import SabertoothPacketSerial
 sys.path.insert(0, '/home/pi/r2_control')
+sys.path.insert(0, '/home/pi//SabertoothPacketSerial/SabertoothPacketSerial')
+from SabertoothPacketSerial import SabertoothPacketSerial
+
 from r2utils import mainconfig
 
 def sig_handler(signal, frame):
@@ -334,7 +336,7 @@ class R2PygameGamepad(R2PygameJoystick):
         self.__args = parser.parse_args()
         # TODO: Figure out what is going on with the Sabertooth driver and get
         # get rid of the next line
-        self.__args.dryrun = True
+        #self.__args.dryrun = True
 
         if self.__args.curses:
             print('\033c')
