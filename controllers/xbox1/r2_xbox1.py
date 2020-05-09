@@ -28,7 +28,18 @@ class XBox1Controller(R2PygameGamepad):
         self.button_released()
 
     def on_axis_motion(self, event):
-        self.axis_motion(event.axis, event.value)
+        if event.axis == 0: # Left vertical
+            self.axis_motion(self.axis_left_vertical, event.value)
+        elif event.axis == 1: # Left horizontal
+            self.axis_motion(self.axis_left_horizontal, event.value)
+        elif event.axis == 2: # Right vertical
+            return
+        elif event.axis == 3: # Right horizontal
+            self.axis_motion(self.axis_right_horizontal, event.value)
+        elif event.axis == 4: # Right trigger
+            return
+        elif event.axis == 5: # Left trigger
+            return
 
     """
     Map XBox-One buttons to PS-3 equivelent
@@ -55,5 +66,5 @@ class XBox1Controller(R2PygameGamepad):
             }
         return switcher.get(buttonIndex,buttonIndex)
 
-_controller = XBox1Controller("xbox1", "XBOX1", True)
+_controller = XBox1Controller("xbox1", "XBOX1")
 _controller.run()

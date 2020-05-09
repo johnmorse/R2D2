@@ -33,9 +33,8 @@ Generic pygame wrapper class used to initialize a pygame joystick and provides
 a run loop to interact with the controller
 """
 class R2PygameJoystick:
-    def __init__(self, debug):
+    def __init__(self):
         """ Constructor """
-        self.debug = debug
         self.__joystick = None
         self.__joystick_count = 0
         self.__display_size = []
@@ -112,7 +111,7 @@ class R2PygameJoystick:
         ContinueRunning returns False.
         """
         self.__initialize()
-        # if self.debug:
+        # if __debug__:
         while (self.continue_running()):
             events = pygame.event.get()
             for event in events:
@@ -136,7 +135,7 @@ class R2PygameJoystick:
         Called at the begining of Run after the connected pygame.joystick is
         found and initialized just before entering the Run message loop.
         """
-        if self.debug:
+        if __debug__:
             print("pygame Initilized")
         return
 
@@ -146,7 +145,7 @@ class R2PygameJoystick:
         Called by Run after continue_running() returns False before the method
         exits.
         """
-        if self.debug:
+        if __debug__:
             print("pygame Run loop finished")
         return
 
@@ -155,7 +154,8 @@ class R2PygameJoystick:
         Called by run for each pygame.event encountered, will call the
         apporopriate On... method based on the event.type.
         """
-        print(event)
+        if __debug__:
+            print(event)
         if event.type == pygame.JOYBUTTONDOWN:
             self.on_button_down(event)
         elif event.type == pygame.JOYBUTTONUP:
@@ -206,13 +206,13 @@ class R2PygameJoystick:
 
     def on_axis_motion(self, ent):
         """Called by EventProc when a pygame.JOYAXISMOTION message is encountered"""
-        if self.debug:
+        if __debug__:
             print("OnAxisMotion")
         return
 
     def on_ball_motion(self, ent):
         """Called by EventProc when a pygame.JOYBALLMOTION message is encountered"""
-        if self.debug:
+        if __debug__:
             print("OnBallMotion")
         return
 
@@ -245,7 +245,7 @@ come buttons on the right, two buttons on the top right and left and a couple
 of buttons in the middle.
 """
 class R2PygameGamepad(R2PygameJoystick):
-    def __init__(self, fileName, description, debug = False):
+    def __init__(self, fileName, description):
         """
         Constructor
 
@@ -255,13 +255,13 @@ class R2PygameGamepad(R2PygameJoystick):
             debug [in] Set the base class debug flag, this will allow initiliztion
                        messages to print while initializing
         """
-        self.debug = debug
         self.__description = description
         self.__key_string_length = 0
         self.__key_state_array = []
         ##########################################################
         # Load config
         self.__configfile = mainconfig.mainconfig['config_dir'] + fileName + '.cfg'
+        self.__configfile_defaults = fileName + '.cfg-default'
         self.__keysfile = mainconfig.mainconfig['config_dir'] + fileName + '_keys.csv'
         self.__read_config_file(fileName)
 
@@ -288,9 +288,11 @@ class R2PygameGamepad(R2PygameJoystick):
         self.drive_mod = self.speed_fac * self.invert
 
         # Set Axis definitions
-        self.__axis_left_vertical = int(self.__config.get('Axis', 'drive'))
-        self.__axis_left_horizontal = int(self.__config.get('Axis', 'turn'))
-        self.__axis_right_horizontal = int(self.__config.get('Axis', 'dome'))
+        self.axis_left_vertical = int(self.__config.get('Axis', 'drive'))
+        self.axis_left_horizontal = int(self.__config.get('Axis', 'turn'))
+        self.axis_right_horizontal = int(self.__config.get('Axis', 'dome'))
+        if __debug__:
+            print("left horizontal:" +str(self.axis_left_horizontal) + "  left vertical:" + str(self.axis_left_vertical) + "  right horizontal:" + str(self.axis_right_horizontal))
         # Base URL used to send get requests
         self.base_url = self.__mainConfig['baseurl']
         # Current key associated with the last button down event
@@ -316,7 +318,7 @@ class R2PygameGamepad(R2PygameJoystick):
         with open(self.__keysfile, mode='r') as infile:
             reader = csv.reader(infile)
             for row in reader:
-                if self.debug:
+                if __debug__:
                     print("Row: %s | %s | %s" % (row[0], row[1], row[2]))
                 self.__keys[row[0]].append(row[1])
                 self.__keys[row[0]].append(row[2])
@@ -335,6 +337,9 @@ class R2PygameGamepad(R2PygameJoystick):
                             default=False, help='Output in a nice readable format')
         self.__args = parser.parse_args()
 
+        self.dryrun = self.__args.dryrun
+        self.dryrun = True;
+
         if self.__args.curses:
             print('\033c')
             self.locate("-=[ " + self.__description + " Controller ]=-", 10, 0)
@@ -349,13 +354,16 @@ class R2PygameGamepad(R2PygameJoystick):
         return
 
     def __initialize_drive(self):
-        if not self.__args.dryrun:
-            if self.debug:
+        if not self.dryrun:
+            if __debug__:
                 print("Not a drytest")
             if self.__config.get('Drive', 'type') == "Sabertooth":
                 self.drive = SabertoothPacketSerial(address=int(self.__config.get('Drive', 'address')),
                                                     type=self.__config.get('Drive', 'type'),
                                                     port=self.__config.get('Drive', 'port'))
+				# self.dome = SabertoothPacketSerial(address=int(_config.get('Dome', 'address')),
+				#                                     type=_config.get('Dome', 'type'),
+				#                                     port=_config.get('Dome', 'port'))
             elif self.__config.get('Drive', 'type') == "ODrive":
                 print("finding an odrive...")
                 self.drive = odrive.find_any()
@@ -379,7 +387,7 @@ class R2PygameGamepad(R2PygameJoystick):
                                                  'accel_rate' : 0.025,
                                                  'curve' : 0.6,
                                                  'deadband' : 0.2})
-
+        # Add default values to configuration dictionary
         self.__config.add_section('Dome')
         self.__config.set('Dome', 'address', '129')
         self.__config.set('Dome', 'type', 'Syren')
@@ -393,12 +401,18 @@ class R2PygameGamepad(R2PygameJoystick):
         self.__config.set('Axis', 'turn', '0')
         self.__config.set('Axis', 'dome', '3')
 
-        self.__config.read(self.__configfile)
+        # Load values from default dictionary if provided
+        if os.path.isfile(self.__configfile_defaults):
+            print("Getting defaults from: " + self.__configfile_defaults)
+            self.__config.read(self.__configfile_defaults)
 
+        # Write the runtime configuration file if it is not found
         if not os.path.isfile(self.__configfile):
             print("Config file does not exist")
-            with open(file_name, 'wb') as configfile:
+            with open(self.__configfile, 'wb') as configfile:
                 self.__config.write(configfile)
+
+        # Read the final configuration file
         self.__mainConfig = self.__config.defaults()
         return
 
@@ -415,26 +429,16 @@ class R2PygameGamepad(R2PygameJoystick):
             return False
         self.steering(self.turning, self.throttle)
         difference = float(time.time() - self.last_command)
-        result = True
         if difference > self.keep_alive:
-            if self.debug:
-                print("Last command sent greater than %s ago, doing keepAlive" % self.keep_alive)
-            #dome.keepAlive()
-            # Check js0 still there
-            if os.path.exists(self.joystick_path):
-                if self.debug:
-                    print("Joystick still there....")
-            else:
-                print("No joystick")
-                self.shutdown_r2()
-                result = False
+            # if __debug__:
+            #     print("Last command sent greater than %s ago, doing keepAlive" % self.keep_alive)
             # Check for no shutdown file
             if os.path.exists('/home/pi/r2_control/controllers/.shutdown'):
                 print("Shutdown file is there")
-                result = False
-                self.shutdown_r2()
-            self.last_command = time.time()
-        return result
+                return False
+            else:
+	            self.last_command = time.time()
+        return True
 
     def on_exit_run(self, exceptionCaught):
         """
@@ -490,7 +494,7 @@ class R2PygameGamepad(R2PygameJoystick):
                                  '%Y-%m-%d %H:%M:%S') + logString + " \n")
             self.__logFile.flush()
         except:
-            if self.debug:
+            if __debug__:
                 print ("Error writing log file")
         return
 
@@ -502,7 +506,7 @@ class R2PygameGamepad(R2PygameJoystick):
             self.log_message(logString)
             return requests.get(self.base_url + url)
         except:
-            if self.debug:
+            if __debug__:
                 print("Get request failed....")
             return ""
 
@@ -519,11 +523,11 @@ class R2PygameGamepad(R2PygameJoystick):
         Will increment or decrement the SpeedFac by 0.5 and give some audio
         feedback.
         """
-        if self.debug:
+        if __debug__:
             print("Incrementing drive speed" if speedUp else "Decrementing drive speed")
         # Calculate the new SppedFac clamping at 0.2 and 1.0
         self.speed_fac = min(1.0, self.speed_fac + 0.05) if sppedUp else max(0.2, self.speed_fac - 0.05)
-        if self.debug:
+        if __debug__:
             print("*** NEW SPEED %s" % self.speed_fac)
         self.locate_if_curses('%4f' % self.speed_fac, 28, 7)
         self.drive_mod = self.speed_fac * self.invert
@@ -544,7 +548,7 @@ class R2PygameGamepad(R2PygameJoystick):
         """
         # Build the new key string based on the currently pressed buttons
         self.key_string = self.get_key_string()
-        if self.debug:
+        if __debug__:
             print("Buttons pressed(%s)" % self.key_string)
         self.locate_if_curses("                   ", 1, 14)
         self.locate_if_curses(self.key_string, 3, 14)
@@ -560,7 +564,7 @@ class R2PygameGamepad(R2PygameJoystick):
             key = self.__keys[self.key_string]
             url = key[0]
             logstr = " : Button Down event : " + self.key_string + "," + url;
-            if self.debug:
+            if __debug__:
                 print("Would run: %s" % key)
                 print("URL: %s" % self.base_url + url)
             self.requests_get(url, logstr)
@@ -583,12 +587,12 @@ class R2PygameGamepad(R2PygameJoystick):
             url = key[1]
             logstr = " : Button Up event : " + self.previous_key_string + "," + key[1];
             # Log key up action
-            if self.debug:
+            if __debug__:
                 print("Would run: %s" % key[1])
                 print("URL: %s" % url)
             self.requests_get(url, logstr)
         except:
-            if self.debug:
+            if __debug__:
                 print("No combo (released)")
         self.previous = ""
         return
@@ -597,26 +601,26 @@ class R2PygameGamepad(R2PygameJoystick):
         """
         Call when one of the joysticks move to handle the joystick move event
         """
-        if axis == self.__axis_left_vertical:
-            if self.debug:
+        if axis == self.axis_left_vertical:
+            if __debug__:
                 print("Value (Drive): %s : Speed Factor : %s" % (value, self.speed_fac))
             self.locate_if_curses("                   ", 10, 4)
             self.locate_if_curses('%10f' % (value), 10, 4)
             self.throttle = value
             self.last_command = time.time()
-        elif axis == self.__axis_left_horizontal:
-            if self.debug:
+        elif axis == self.axis_left_horizontal:
+            if __debug__:
                 print("Value (Steer): %s" % value)
             self.locate_if_curses("                   ", 10, 5)
             self.locate_if_curses('%10f' % (value), 10, 5)
             self.turning = value
-        elif axis == self.__axis_right_horizontal:
-            if self.debug:
+        elif axis == self.axis_right_horizontal:
+            if __debug__:
                 print("Value (Dome): %s" % value)
             self.locate_if_curses("                   ", 35, 4)
             self.locate_if_curses('%10f' % (value), 35, 4)
             self.log_message(" : Dome : " + str(value) + "\n")
-            if not self.__args.dryrun and self.debug:
+            if not self.dryrun and __debug__:
                 print("Not a drytest")
             self.locate_if_curses("                   ", 35, 8)
             self.locate_if_curses('%10f' % (value), 35, 8)
@@ -647,7 +651,7 @@ class R2PygameGamepad(R2PygameJoystick):
         left = (max(-1, min(left, 1)))*self.drive_mod
         right = (max(-1, min(right, 1)))*self.drive_mod
 
-        if not self.__args.dryrun:
+        if not self.dryrun:
             if self.__config.get('Drive', 'type') == "Sabertooth":
                 self.drive.motor(0,left)
                 self.drive.motor(1,right)
@@ -663,21 +667,20 @@ class R2PygameGamepad(R2PygameJoystick):
     def shutdown_r2(self):
         """ Put R2 into a safe state """
         print("Running shutdown procedure")
-        if self.debug:
+        if __debug__:
             print("Stopping all motion...")
             print("...Setting drive to 0")
         self.steering(0, 0)
-        if self.debug:
+        if __debug__:
             print("...Setting dome to 0")
 
-        # TODO: Initialize self.Dome in constructor
-        #self.Dome.driveCommand(0)
+        self.Dome.driveCommand(0)
 
-        if self.debug:
+        if __debug__:
             print("Disable drives")
         self.requests_get("servo/body/ENABLE_DRIVE/0/0", "Disable drives on shutdown")
 
-        if self.debug:
+        if __debug__:
             print("Disable dome")
         self.requests_get("servo/body/ENABLE_DOME/0/0", "Disable dome on shutdown")
 

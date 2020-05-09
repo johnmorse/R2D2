@@ -8,10 +8,14 @@ keepalive = 0.25
 [Dome]
 address = 129
 type = Syren
-port = /dev/ttyUSB0
+port = /dev/ttyS0
 
 [Drive]
 address = 128
 type = Sabertooth
 port = /dev/ttyACM0
 
+[Axis]
+drive = 0
+turn = 1
+dome = 3

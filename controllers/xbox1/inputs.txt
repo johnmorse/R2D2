@@ -1,8 +1,16 @@
-    L3  R3  ST  UP  RGT DWN LFT L2  R2  L1  R1  TRI CIR X   SQ   
-0   0   0   0   0   0   0   0   1   0   1   0   0   0   0   1   0   0   0
-1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19
+A   B       X   Y       L1  R1             Menu     L3  R3
+0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19
+
+D-Pad:
+  (-1,  0) - Left
+  ( 1,  0) - Right
+  ( 0, -1) - Down
+  ( 0,  1) - Up
+  ( 0,  0) - Button up
 
 Axis: 0 - Left - Up/Down
       1 - Left - Left/Right
       2 - Right - Up/Down
       3 - Right - Left/Right
+      4 - Right - Trigger (R2)
+      5 - Left - Trigger (L2)
